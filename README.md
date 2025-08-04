@@ -95,8 +95,92 @@ To get a local copy up and running, follow these simple steps.
 - You must have the [Flutter SDK](https://docs.flutter.dev/get-started/install) installed on your machine.
 - An IDE like Visual Studio Code or Android Studio.
 
+### Installation
+
 1. Clone the repo
    ```sh
-   git clone https://github.com/BrightFK/journal.git
+   git clone https://github.com/your-username/mindmeld_ai.git
 
-   
+
+Navigate into the project directory
+
+Generated sh
+cd mindmeld_ai
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Sh
+IGNORE_WHEN_COPYING_END
+
+Install dependencies
+
+Generated sh
+flutter pub get
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Sh
+IGNORE_WHEN_COPYING_END
+
+Crucial: Create your AI API key file.
+
+In the lib/ directory, create a new file named secrets.dart.
+
+Add the following content, pasting in your API key from Google AI Studio:
+
+Generated dart
+const String geminiApiKey = 'PASTE_YOUR_GEMINI_API_KEY_HERE';
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Dart
+IGNORE_WHEN_COPYING_END
+
+Run the code generator for the Hive database models:
+
+Generated sh
+flutter pub run build_runner build --delete-conflicting-outputs
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Sh
+IGNORE_WHEN_COPYING_END
+
+Run the app on an emulator or a physical device:
+
+Generated sh
+flutter run
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Sh
+IGNORE_WHEN_COPYING_END
+Future Roadmap
+
+This project has a strong foundation, but there are many exciting paths forward:
+
+Habit & Goal Tracking: Integrate tools to set and track personal goals.
+
+Secure Cloud Sync: Implement end-to-end encrypted backup and sync using Firebase.
+
+AI-Powered Notifications: Proactively send users a weekly summary of their mood trends.
+
+Rich Text Editing: Add markdown support (bold, italics, lists) to the journal editor.
+
+License
+
+Distributed under the MIT License. See LICENSE.txt for more information.
+
+This project was created with the guidance and collaboration of a generative AI assistant, demonstrating a modern workflow for rapid, iterative, and feature-rich application development.
+
+Generated code
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
