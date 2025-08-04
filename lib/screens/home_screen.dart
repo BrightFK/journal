@@ -14,7 +14,6 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-// CORRECT: Added WidgetsBindingObserver to the state class
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -24,36 +23,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    // CORRECT: Register this class as a lifecycle observer.
     WidgetsBinding.instance.addObserver(this);
-    // CORRECT: Listen for authentication requests from our LockService.
     LockService.instance.requiresAuth.addListener(_handleAuthRequest);
   }
 
   @override
   void dispose() {
-    // CORRECT: It's crucial to remove observers and listeners to prevent memory leaks.
     WidgetsBinding.instance.removeObserver(this);
     LockService.instance.requiresAuth.removeListener(_handleAuthRequest);
     super.dispose();
   }
 
-  // CORRECT: This new method handles showing the lock screen.
-  void _handleAuthRequest() {
-    if (LockService.instance.requiresAuth.value && mounted) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-            builder: (_) => const AuthScreen(isPushedAsOverlay: true)),
-      );
-      LockService.instance.requiresAuth.value = false;
-    }
-  }
-
-  // CORRECT: This method from WidgetsBindingObserver correctly delegates to our service.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (kDebugMode) print("App Lifecycle State Changed to: $state");
+    if (kDebugMode) {
+      print("App Lifecycle State Changed to: $state");
+    }
     switch (state) {
       case AppLifecycleState.resumed:
         LockService.instance.onResumed();
@@ -64,6 +50,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.hidden:
         LockService.instance.onPaused();
         break;
+    }
+  }
+
+  void _handleAuthRequest() {
+    if (LockService.instance.requiresAuth.value && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (_) => const AuthScreen(isPushedAsOverlay: true)),
+      );
+      LockService.instance.requiresAuth.value = false;
     }
   }
 
@@ -122,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: ListView(
                       children: [
                         const SizedBox(height: 16),
-                        // MODIFIED: Removed the boolean parameter which was not needed.
                         _buildHeader(),
                         const SizedBox(height: 20),
                         _buildCalendar(),
@@ -151,13 +146,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // --- UI HELPER WIDGETS ---
 
+  /// This is the CORRECTED side navigation bar.
+  /// It now uses a ListView to guarantee its contents will scroll on short screens, preventing any overflows.
   Widget _buildSideNavigationBar() {
     return SafeArea(
       right: false,
       child: Container(
         width: 88,
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: Column(
+        child: ListView(
+          // Using ListView as the root guarantees scrollability.
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
@@ -167,8 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _buildRailDestinationItem(index: 0),
             _buildRailDestinationItem(index: 1),
             _buildRailDestinationItem(index: 2),
-            const Expanded(child: SizedBox()),
-            _buildRailDestinationItem(index: 3),
+            _buildRailDestinationItem(index: 3), // Add the last item directly.
             const SizedBox(height: 8),
           ],
         ),
@@ -199,20 +196,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             Icon(dest['icon'],
                 color: isSelected ? theme.colorScheme.primary : Colors.grey),
             const SizedBox(height: 4),
-            Text(
-              dest['label'],
-              style: TextStyle(
-                  color: isSelected ? theme.colorScheme.primary : Colors.grey,
-                  fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
+            Text(dest['label'],
+                style: TextStyle(
+                    color: isSelected ? theme.colorScheme.primary : Colors.grey,
+                    fontSize: 12),
+                textAlign: TextAlign.center),
           ],
         ),
       ),
     );
   }
 
-  // MODIFIED: Removed duplicated search button and fixed logic
   Widget _buildBottomAppBar() {
     return BottomAppBar(
       color: const Color(0xFF2C2C2E),
@@ -222,10 +216,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavIcon(index: 0),
-          _buildNavIcon(index: 1), // Search
+          _buildNavIcon(index: 1),
           const SizedBox(width: 40),
-          _buildNavIcon(index: 2), // Dashboard
-          _buildNavIcon(index: 3), // Profile
+          _buildNavIcon(index: 2),
+          _buildNavIcon(index: 3),
         ],
       ),
     );
@@ -242,7 +236,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // CORRECT: Complete and correct implementation of _buildJournalList
   Widget _buildJournalList() {
     return ValueListenableBuilder<Box<JournalEntry>>(
       valueListenable: Hive.box<JournalEntry>('journal_entries').listenable(),
@@ -329,7 +322,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  // MODIFIED: Corrected and cleaned up the _buildHeader method.
   Widget _buildHeader() {
     return ValueListenableBuilder<Box<UserProfile>>(
       valueListenable: Hive.box<UserProfile>('user_profile').listenable(),
@@ -360,8 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             const SizedBox(width: 16),
             GestureDetector(
-              onTap: () =>
-                  _onDestinationSelected(3), // Tap avatar to go to Profile
+              onTap: () => _onDestinationSelected(3),
               child: CircleAvatar(
                 radius: 25,
                 backgroundColor:
